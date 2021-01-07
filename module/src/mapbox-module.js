@@ -100,8 +100,8 @@ const MapboxNode = Noodl.defineReactNode({
 
 		//coordinates and zoom
 		longitude: {displayName: 'Longitude', type: 'number', group: 'Coordinates', default: 0},
-		latitute: {displayName: 'Latitude', type: 'number', group: 'Coordinates'}, default: 0,
-		zoom: {displayName: 'Longitude', type: 'number', group: 'Coordinates', default: 1},
+		latitute: {displayName: 'Latitude', type: 'number', group: 'Coordinates', default: 0},
+		zoom: {displayName: 'Zoom', type: 'number', group: 'Coordinates', default: 0},
 	},
 	signals: {
 		centerOnUser: {
