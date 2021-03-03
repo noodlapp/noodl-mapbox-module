@@ -58,7 +58,7 @@ const MapboxNode = Noodl.defineReactNode({
 			const map = new mapboxgl.Map({
 				container: domElement,
 				style: this.inputs.mapboxStyle || 'mapbox://styles/mapbox/streets-v11',
-				center: [this.inputs.longitude || 0, this.inputs.latitute || 0],
+				center: [this.inputs.longitude || 0, this.inputs.latitude || 0],
 				zoom: this.inputs.zoom || 0,
 				interactive: this.inputs.interactive
 			});
@@ -68,7 +68,7 @@ const MapboxNode = Noodl.defineReactNode({
 			map.on('move', () => {
 				this.setOutputs({
 					longitude: map.getCenter().lng.toFixed(4),
-					latitute: map.getCenter().lat.toFixed(4),
+					latitude: map.getCenter().lat.toFixed(4),
 					zoom: map.getZoom().toFixed(2)
 				})
 			});
@@ -80,6 +80,21 @@ const MapboxNode = Noodl.defineReactNode({
 				},
 				trackUserLocation: true
 			});
+
+			function addPin(long, lat) {
+				var marker = new mapboxgl.Marker()
+					.setLngLat([long, lat])
+					.addTo(this.map);
+			};
+			this.addPin = addPin;
+
+			function flyTo(long, lat) {
+				this.map.flyTo({
+					center: [long, lat],
+					essential: true 
+					});
+			}
+			this.flyTo = flyTo;
 
 			map.addControl(this.geolocate);
 
@@ -100,7 +115,7 @@ const MapboxNode = Noodl.defineReactNode({
 
 		//coordinates and zoom
 		longitude: {displayName: 'Longitude', type: 'number', group: 'Coordinates', default: 0},
-		latitute: {displayName: 'Latitude', type: 'number', group: 'Coordinates', default: 0},
+		latitude: {displayName: 'Latitude', type: 'number', group: 'Coordinates', default: 0},
 		zoom: {displayName: 'Zoom', type: 'number', group: 'Coordinates', default: 0},
 	},
 	signals: {
@@ -109,12 +124,26 @@ const MapboxNode = Noodl.defineReactNode({
 			group: 'Actions',
 			signal() {
 				this.geolocate && this.geolocate.trigger();
+			},
+		},
+		addPin: {
+			displayName: 'Add pin to map',
+			group: 'Actions',
+			signal() { 
+				this.addPin(this.inputs.longitude, this.inputs.latitude);
 			}
-		}
+		},
+		flyTo: {
+			displayName: 'Pan to location',
+			group: 'Actions',
+			signal() {
+				this.flyTo(this.inputs.longitude, this.inputs.latitude);
+			}
+		},
 	},
 	outputs: {
 		longitude: {displayName: 'Longitude', type: 'number', group: 'Coordinates'},
-		latitute: {displayName: 'Latitude', type: 'number', group: 'Coordinates'},
+		latitude: {displayName: 'Latitude', type: 'number', group: 'Coordinates'},
 		zoom: {displayName: 'Longitude', type: 'number', group: 'Coordinates'},
 		mapLoaded: {displayName: 'Map Loaded', type: 'signal'}
 	},
